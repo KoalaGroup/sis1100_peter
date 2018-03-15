@@ -68,6 +68,36 @@ sgl_map_user_pages(struct sg_table *table, const char* xuaddr, size_t count,
         /* Try to fault in all of the necessary pages */
 	down_read(&current->mm->mmap_sem);
         /* rw==READ means read from drive, write into memory area */
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
+		res = get_user_pages_remote(
+		current,
+		current->mm,
+		uaddr,
+		nr_pages,
+		rw == READ,
+		pages,
+		NULL,
+		NULL);
+	#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4,9,0)
+	res = get_user_pages_remote(
+		current,
+		current->mm,
+		uaddr,
+		nr_pages,
+		rw == READ,
+		pages,
+		NULL);	
+	#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4,5,0)
+	res = get_user_pages_remote(
+		current,
+		current->mm,
+		uaddr,
+		nr_pages,
+		rw == READ,
+		0, /* don't force */
+		pages,
+		NULL);	
+	#else
 	res = get_user_pages(
 		current,
 		current->mm,
@@ -77,6 +107,7 @@ sgl_map_user_pages(struct sg_table *table, const char* xuaddr, size_t count,
 		0, /* don't force */
 		pages,
 		NULL);
+	#endif
 	up_read(&current->mm->mmap_sem);
 
 	/* Errors and no page mapped should return here */
@@ -117,7 +148,11 @@ sgl_map_user_pages(struct sg_table *table, const char* xuaddr, size_t count,
 out_unmap:
 	if (res > 0) {
 		for (j=0; j < res; j++)
+			#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,6,0)
+			put_page(pages[j]);
+			#else
 			page_cache_release(pages[j]);
+			#endif
                 res=-EIO;
 	}
 	kfree(pages);
@@ -141,7 +176,11 @@ sgl_unmap_user_pages(struct sg_table *table, int dirtied)
 		/* FIXME: cache flush missing for rw==READ
 		 * FIXME: call the correct reference counting function
 		 */
+		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,6,0)
+		put_page(page);
+		#else
 		page_cache_release(page);
+		#endif
 	}
 
 	return 0;

@@ -173,7 +173,10 @@ static DEVICE_ATTR(remote_ident, 0444, show_remote_ident, 0);
 static DEVICE_ATTR(local_serial, 0444, show_local_serial, 0);
 static DEVICE_ATTR(remote_online, 0444, show_remote_online, 0);
 static DEVICE_ATTR(remote_size, 0444, show_remote_size, 0);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,13)
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0)
+ static struct class_attribute class_attr_version = __ATTR(version, 0444, show_version, NULL);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,13)
 static CLASS_ATTR(version, 0444, show_version, NULL);
 #endif
 

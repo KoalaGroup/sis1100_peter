@@ -41,6 +41,14 @@
 #include "sis1100_map.h"
 #include "sis1100_var.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0)
+#include "uapi/linux/sched/types.h"
+#include "sched/signal.h"
+#endif
+
+/* 16NOV2016 For FEDORA23_Kernel4.2.3.300 */
+#include "vmalloc.h"
+
 #ifndef PCI_VENDOR_FZJZEL
 #   define PCI_VENDOR_FZJZEL 0x1796
 #endif
