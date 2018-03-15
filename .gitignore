@@ -26,3 +26,11 @@ tsm
 vertex
 wago
 tclIndex
+*.ko
+*.o
+*.cmd
+*.mod.c
+Module.symvers
+modules.order
+Module.markers
+.tmp_versions
