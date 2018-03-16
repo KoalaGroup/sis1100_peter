@@ -23,12 +23,16 @@ driver:
 	make -C /lib/modules/$(KERNVER)/build SUBDIRS=$(shell pwd) modules
 
 install:
+	-/sbin/rmmod $(MODULENAME)
 	make -C /lib/modules/$(KERNVER)/build SUBDIRS=$(shell pwd) modules_install
+	/sbin/depmod -a
+	/sbin/modprobe $(MODULENAME)
+	cp -f ../../udev-rules/92-struck.rules /etc/udev/rules.d/92-struck.rules
 
 clean:
-	-rm *.o *.ko .*.o.cmd .*.ko.cmd *.mod.c Module.symvers modules.order
-	-rm Module.markers
-	-rm -r .tmp_versions
+	-rm -f *.o *.ko .*.o.cmd .*.ko.cmd *.mod.c Module.symvers modules.order
+	-rm -f Module.markers
+	-rm -r -f .tmp_versions
 
 
 ifndef src
