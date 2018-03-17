@@ -29,7 +29,7 @@
 #include "sis1100_sc.h"
 
 /* define PLXIRQ_DEBUG as 0 or 1 (should normally be 0) */
-#define PLXIRQ_DEBUG 1
+#define PLXIRQ_DEBUG 0
 
 #if (PLXIRQ_DEBUG)
 #   define PLXIRQ_BRAKE 100
